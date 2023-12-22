@@ -80,7 +80,7 @@ if "chat_history" not in st.session_state:
         ChatThreadHistory(title="New Chat")]
 
 with st.sidebar:
-    st.selectbox("Chat history",
+    st.selectbox("Chat Selection",
                  key="chat_i",
                  options=reversed(range(len(st.session_state.chat_history))),
                  format_func=lambda i: st.session_state.chat_history[i].title)
