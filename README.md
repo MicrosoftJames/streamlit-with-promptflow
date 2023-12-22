@@ -1,3 +1,8 @@
+<p align="center" style="background-color: transparent;">
+  <img src="imgs/robot.png" alt="Robot Blocks" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto; width: 50%;">
+</p>
+
+
 # Streamlit with Prompt flow Demo
 This project demonstrates how to use [Streamlit](https://streamlit.io/) to build a simple chat app that uses [Prompt flow](https://microsoft.github.io/promptflow) to generate responses with a model deployed in Azure OpenAI Service. The app uses two flows:
 1. [chat](flows/chat) - for generating responses to user input given the context of the conversation
