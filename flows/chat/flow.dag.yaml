@@ -1,0 +1,34 @@
+$schema: https://azuremlschemas.azureedge.net/promptflow/latest/Flow.schema.json
+environment:
+  python_requirements_txt: requirements.txt
+inputs:
+  chat_history:
+    type: list
+    is_chat_history: true
+  question:
+    type: string
+    is_chat_input: true
+outputs:
+  answer:
+    type: string
+    reference: ${chat_node.output}
+    is_chat_output: true
+nodes:
+- name: chat_prompt
+  type: prompt
+  source:
+    type: code
+    path: chat_prompt.jinja2
+  inputs:
+    chat_history: ${inputs.chat_history}
+    question: ${inputs.question}
+- name: chat_node
+  type: llm
+  source:
+    type: code
+    path: chat_node.jinja2
+  inputs:
+    prompt_to_execute: ${chat_prompt.output}
+    deployment_name: gpt-4-turbo
+  connection: azure_open_ai_connection
+  api: chat

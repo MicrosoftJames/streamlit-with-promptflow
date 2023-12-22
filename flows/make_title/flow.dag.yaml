@@ -1,0 +1,19 @@
+$schema: https://azuremlschemas.azureedge.net/promptflow/latest/Flow.schema.json
+inputs:
+  user_question:
+    type: string
+outputs:
+  title:
+    type: string
+    reference: ${make_title.output}
+nodes:
+- name: make_title
+  type: llm
+  source:
+    type: code
+    path: make_title.jinja2
+  inputs:
+    user_question: ${inputs.user_question}
+    deployment_name: gpt-4-turbo
+  connection: azure_open_ai_connection
+  api: chat

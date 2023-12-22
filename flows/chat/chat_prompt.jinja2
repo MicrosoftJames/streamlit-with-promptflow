@@ -1,0 +1,14 @@
+{# This a comment. #}
+
+system:
+Be helpful to the user. Always respond in markdown format.
+
+{% for item in chat_history %}
+user:
+{{item.inputs.question}}
+assistant:
+{{item.outputs.answer}}
+{% endfor %}
+
+user:
+{{question}}
