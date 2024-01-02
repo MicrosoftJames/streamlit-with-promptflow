@@ -19,3 +19,17 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account show
+
+    - name: Pulumi Login
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      uses: pulumi/actions@v5.0.0
+      with:
+        command: login
+
+    - name: Pulumi WhoAmI
+      uses: pulumi/actions@v5.0.0
+      with:
+        command: whoami
+       
+      
