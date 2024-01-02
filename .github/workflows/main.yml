@@ -31,5 +31,3 @@ jobs:
       uses: pulumi/actions@v5.0.0
       with:
         command: whoami
-       
-      
