@@ -25,5 +25,5 @@ jobs:
         PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       uses: pulumi/actions@v3
       with:
-        command: preview
-        stack-name: index
+        command: init
+        stack-name: testing
