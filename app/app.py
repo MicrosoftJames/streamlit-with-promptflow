@@ -25,7 +25,7 @@ class Message(BaseModel):
 class ChatThreadHistory(BaseModel):
     title: str
     is_default: bool = True
-    messages: List[Message] = field(default_factory=list)
+    messages: List[Message] = []
 
     def __post_init__(self):
         self.messages = [Message(**m) for m in self.messages]
@@ -42,9 +42,10 @@ class ChatThreadHistory(BaseModel):
         return json.dumps(promptflow_format)
 
 
-def save_chat_history():
+def save_chat_history(chat_history: List[ChatThreadHistory]):
     with open("chat_history.jsonl", "w") as f:
-        for ch in st.session_state.chat_history:
+        f.truncate()
+        for ch in chat_history:
             f.write(json.dumps(ch.model_dump()) + "\n")
 
 
@@ -95,7 +96,7 @@ with st.sidebar:
         if len(st.session_state.chat_history) == 0:
             st.session_state.chat_history.append(
                 ChatThreadHistory(title="New Chat"))
-        save_chat_history()
+        save_chat_history(st.session_state.chat_history)
 
     st.button("Delete chat", on_click=lambda: delete_chat())
 
@@ -108,10 +109,12 @@ for message in st.session_state.chat_history[st.session_state.chat_i].messages:
 
 # Accept user input
 if prompt := chat.chat_input("Type a message..."):
-    save_chat_history()
     # Add user message to chat history
-    st.session_state.chat_history[st.session_state.chat_i].messages.append(
+    chat_history = st.session_state.chat_history
+    chat_history[st.session_state.chat_i].messages.append(
         Message(role="user", content=prompt))
+    st.session_state.chat_history = chat_history
+    save_chat_history(chat_history)
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -139,16 +142,19 @@ if prompt := chat.chat_input("Type a message..."):
         message_placeholder.markdown(full_response)
 
     # Add assistant response to chat history
-    st.session_state.chat_history[st.session_state.chat_i].messages.append(
+    chat_history[st.session_state.chat_i].messages.append(
         Message(role="assistant", content=full_response))
+    st.session_state.chat_history = chat_history
+    save_chat_history(chat_history)
 
     # If the first message is a question, use it to generate a title
-    if st.session_state.chat_history[st.session_state.chat_i].is_default:
-        title = title_flow(user_question=st.session_state.chat_history[
+    if chat_history[st.session_state.chat_i].is_default:
+        title = title_flow(user_question=chat_history[
             st.session_state.chat_i].messages[0].content)["title"]
-        st.session_state.chat_history[st.session_state.chat_i].title = title
-        st.session_state.chat_history[
+        chat_history[st.session_state.chat_i].title = title
+        chat_history[
             st.session_state.chat_i].is_default = False
+        st.session_state.chat_history = chat_history
+        save_chat_history(chat_history)
         st.experimental_rerun()
-
-    save_chat_history()
+ 
