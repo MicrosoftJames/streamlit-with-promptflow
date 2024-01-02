@@ -23,7 +23,7 @@ jobs:
     - name: Pulumi Login
       env:
         PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-      uses: pulumi/actions@v5.0.0
+      uses: pulumi/actions@v3
       with:
         command: preview
         stack-name: index
