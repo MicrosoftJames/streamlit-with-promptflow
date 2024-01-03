@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
 
-name: Run Azure Login With a Service Principal Secret
+name: Deploy Pulumi Infrastructure
 
 jobs:
 
@@ -20,7 +20,7 @@ jobs:
         inlineScript: |
           az account show
 
-    - name: Pulumi Stack Init
+    - name: Pulumi Up
       uses: pulumi/actions@v5.0.0
       with:
         command: up
