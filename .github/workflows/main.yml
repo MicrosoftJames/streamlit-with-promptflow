@@ -8,7 +8,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    
+
+    - uses: actions/checkout@v1
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -20,11 +21,11 @@ jobs:
         inlineScript: |
           az account show
 
-    - name: Pulumi preview
+    - name: Pulumi Up
       uses: pulumi/actions@v5.0.0
       with:
-        command: preview
+        command: up
         work-dir: infrastructure
-        stack-name: MicrosoftJames/streamlit-promptflow-demo/dev # When using an individual account, only use stack-name.
+        stack-name: MicrosoftJames/streamlit-promptflow-demo/dev
       env:
        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
