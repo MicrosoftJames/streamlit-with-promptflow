@@ -20,10 +20,10 @@ jobs:
         inlineScript: |
           az account show
 
-    - name: Pulumi Login
-      env:
-        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+    - name: Pulumi preview
       uses: pulumi/actions@v3
       with:
-        command: init
-        stack-name: testing
+        command: preview
+        stack-name: streamlit-promptflow-demo/dev # When using an individual account, only use stack-name.
+      env:
+       PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
