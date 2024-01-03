@@ -29,3 +29,5 @@ jobs:
         upsert: true
       env:
        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+       OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
+       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
