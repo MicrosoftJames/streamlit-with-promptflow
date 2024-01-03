@@ -21,9 +21,10 @@ jobs:
           az account show
 
     - name: Pulumi preview
-      uses: pulumi/actions@v3
+      uses: pulumi/actions@v5.0.0
       with:
         command: preview
+        work-dir: infrastructure
         stack-name: MicrosoftJames/streamlit-promptflow-demo/dev # When using an individual account, only use stack-name.
       env:
        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
