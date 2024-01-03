@@ -1,0 +1,6 @@
+name: streamlit-promptflow-demo
+runtime:
+  name: python
+  options:
+    virtualenv: venv
+description: A minimal Python Pulumi program with the classic Azure provider

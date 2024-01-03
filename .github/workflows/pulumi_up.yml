@@ -1,0 +1,31 @@
+on:
+  workflow_dispatch:
+
+name: Run Azure Login With a Service Principal Secret
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account show
+
+    - name: Pulumi Stack Init
+      uses: pulumi/actions@v5.0.0
+      with:
+        command: up
+        work-dir: infrastructure
+        stack-name: ${{ vars.PULUMI_ORG_NAME }}/streamlit-promptflow-demo/dev
+        upsert: true
+      env:
+       PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
