@@ -21,10 +21,10 @@ jobs:
         inlineScript: |
           az account show
 
-    - name: Pulumi Up
+    - name: Pulumi Stack Init
       uses: pulumi/actions@v5.0.0
       with:
-        command: up
+        command: stack init
         work-dir: infrastructure
         stack-name: MicrosoftJames/streamlit-promptflow-demo/dev
       env:
