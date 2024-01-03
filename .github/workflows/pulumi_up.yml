@@ -15,7 +15,7 @@ jobs:
       with:
         command: up
         work-dir: infrastructure
-        stack-name: ${{ vars.PULUMI_ORG_NAME }}/streamlit-promptflow-demo/dev
+        stack-name: ${{ vars.PULUMI_ORG_NAME }}/streamlit-promptflow-demo/dev2
         upsert: true
       env:
        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
