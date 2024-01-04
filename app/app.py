@@ -8,6 +8,7 @@ import time
 import promptflow as pf
 from promptflow.entities import AzureOpenAIConnection
 
+from auth import handle_login, handle_logout
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_API_BASE = os.getenv("OPENAI_API_BASE")
@@ -42,18 +43,22 @@ class ChatThreadHistory(BaseModel):
         return json.dumps(promptflow_format)
 
 
-def save_chat_history(chat_history: List[ChatThreadHistory]):
-    with open("chat_history.jsonl", "w") as f:
+def save_chat_history(chat_history: List[ChatThreadHistory], filename):
+    with open(filename, "w") as f:
         f.truncate()
         for ch in chat_history:
             f.write(json.dumps(ch.model_dump()) + "\n")
 
 
-def restore_chat_history():
-    with open("chat_history.jsonl", "r") as f:
+def restore_chat_history(filename):
+    with open(filename, "r") as f:
         st.session_state.chat_history = [ChatThreadHistory(**json.loads(ch))
                                          for ch in f.readlines()]
 
+
+# Handle login
+handle_login()
+user_id = st.session_state.user_id
 
 st.set_page_config(page_title=PAGE_TITLE)
 
@@ -69,9 +74,10 @@ chat_flow.context.streaming = True
 title_flow = pf.load_flow(source=TITLE_FLOW_PATH)
 
 # on first load, restore chat history from file
+chat_history_file_name_for_user = f"chat_history_{user_id}.jsonl"
 if "chat_history" not in st.session_state and \
-        os.path.exists("chat_history.jsonl"):
-    restore_chat_history()
+        os.path.exists(chat_history_file_name_for_user):
+    restore_chat_history(chat_history_file_name_for_user)
 
 st.title(PAGE_TITLE)
 
@@ -81,6 +87,8 @@ if "chat_history" not in st.session_state:
         ChatThreadHistory(title="New Chat")]
 
 with st.sidebar:
+    st.markdown(f"Logged in as {user_id}")
+    st.button("Logout", on_click=lambda: handle_logout())
     st.selectbox("Chat Selection",
                  key="chat_i",
                  options=reversed(range(len(st.session_state.chat_history))),
@@ -96,7 +104,7 @@ with st.sidebar:
         if len(st.session_state.chat_history) == 0:
             st.session_state.chat_history.append(
                 ChatThreadHistory(title="New Chat"))
-        save_chat_history(st.session_state.chat_history)
+        save_chat_history(st.session_state.chat_history, chat_history_file_name_for_user)
 
     st.button("Delete chat", on_click=lambda: delete_chat())
 
@@ -114,7 +122,7 @@ if prompt := chat.chat_input("Type a message..."):
     chat_history[st.session_state.chat_i].messages.append(
         Message(role="user", content=prompt))
     st.session_state.chat_history = chat_history
-    save_chat_history(chat_history)
+    save_chat_history(chat_history, chat_history_file_name_for_user)
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -145,7 +153,7 @@ if prompt := chat.chat_input("Type a message..."):
     chat_history[st.session_state.chat_i].messages.append(
         Message(role="assistant", content=full_response))
     st.session_state.chat_history = chat_history
-    save_chat_history(chat_history)
+    save_chat_history(chat_history, chat_history_file_name_for_user)
 
     # If the first message is a question, use it to generate a title
     if chat_history[st.session_state.chat_i].is_default:
@@ -155,6 +163,5 @@ if prompt := chat.chat_input("Type a message..."):
         chat_history[
             st.session_state.chat_i].is_default = False
         st.session_state.chat_history = chat_history
-        save_chat_history(chat_history)
+        save_chat_history(chat_history, chat_history_file_name_for_user)
         st.experimental_rerun()
- 
