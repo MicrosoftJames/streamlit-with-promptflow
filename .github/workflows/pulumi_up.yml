@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
 
-name: Run Azure Login With a Service Principal Secret
+name: Deploy Pulumi Infrastructure
 
 jobs:
 
@@ -9,18 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
-    - name: Azure CLI script
-      uses: azure/CLI@v1
-      with:
-        azcliversion: latest
-        inlineScript: |
-          az account show
 
-    - name: Pulumi Stack Init
+    - name: Pulumi Up
       uses: pulumi/actions@v5.0.0
       with:
         command: up
@@ -29,3 +23,10 @@ jobs:
         upsert: true
       env:
        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+       OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
+       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+       ARM_LOCATION_NAME: ${{ secrets.ARM_LOCATION_NAME }}
