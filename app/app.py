@@ -11,7 +11,7 @@ from promptflow.entities import AzureOpenAIConnection
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_API_BASE = os.getenv("OPENAI_API_BASE")
-PAGE_TITLE = "PromptFlow Chat Demo"
+PAGE_TITLE = "Prompt flow + Streamlit"
 
 CHAT_FLOW_PATH = "flows/chat"
 TITLE_FLOW_PATH = "flows/make_title"
