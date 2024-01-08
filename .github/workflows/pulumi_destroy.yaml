@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
 
-name: Deploy Pulumi Infrastructure
+name: Destroy Pulumi Infrastructure
 jobs:
 
   build-and-deploy:
