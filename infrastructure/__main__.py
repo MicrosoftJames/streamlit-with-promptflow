@@ -97,27 +97,7 @@ webapp = azure_native.web.WebApp(
         http20_enabled=False,
         linux_fx_version=image_name_with_repo.apply(lambda i: f"DOCKER|{i}"),
         number_of_workers=1,
-        app_command_line="",
-        app_settings=[
-            azure_native.web.NameValuePairArgs(
-                name="DOCKER_REGISTRY_SERVER_URL",
-                value=pulumi.Output.concat("https://", registry.login_server),
-            ),
-            azure_native.web.NameValuePairArgs(
-                name="DOCKER_REGISTRY_SERVER_USERNAME", value=registry.name
-            ),
-            azure_native.web.NameValuePairArgs(
-                name="DOCKER_REGISTRY_SERVER_PASSWORD",
-                value=registry_credentials.passwords[0].value,
-            ),
-            azure_native.web.NameValuePairArgs(
-                name="WEBSITES_ENABLE_APP_SERVICE_STORAGE", value="false"
-            ),
-            azure_native.web.NameValuePairArgs(name="DOCKER_ENABLE_CI", value="true"),
-            azure_native.web.NameValuePairArgs(name="WEBSITES_PORT", value="8501"),
-            azure_native.web.NameValuePairArgs(name="OPENAI_API_KEY", value=OPENAI_API_KEY),
-            azure_native.web.NameValuePairArgs(name="OPENAI_API_BASE", value=OPENAI_API_BASE)
-        ],
+        app_command_line=""
     ),
 )
 
@@ -126,7 +106,7 @@ current = azuread.get_client_config()
 streamlit_promptflow_demo_aad_app = azuread.Application(
     "streamlit-promptflow-demo-aad-app",
     display_name="streamlit-promptflow-demo",
-    sign_in_audience="AzureADMyOrg",
+    sign_in_audience="AzureADMultipleOrgs",
     owners=[current.object_id],
     web=azuread.ApplicationWebArgs(
         implicit_grant=azuread.ApplicationWebImplicitGrantArgs(
@@ -148,15 +128,46 @@ application_password = azuread.ApplicationPassword(
     application_object_id=streamlit_promptflow_demo_aad_app.object_id,
 )
 
-auth_settings = azure_native.web.WebAppAuthSettings(
-    "streamlit-promptflow-demo-auth-settings",
-    enabled=True,
+
+azure_native.web.WebAppApplicationSettings(
+    "streamlit-promptflow-demo-app-settings",
     resource_group_name=resource_group.name,
     name=webapp.name,
-    unauthenticated_client_action="RedirectToLoginPage",
-    default_provider=azure_native.web.BuiltInAuthenticationProvider.AZURE_ACTIVE_DIRECTORY,
-    client_id=streamlit_promptflow_demo_aad_app.client_id,
-    client_secret=application_password.value,
-    issuer=f"https://sts.windows.net/{current.tenant_id}/v2.0",
-    allowed_audiences=[streamlit_promptflow_demo_aad_app.client_id],
+    kind="app",
+    properties={
+        "DOCKER_REGISTRY_SERVER_URL": pulumi.Output.concat(
+            "https://", registry.login_server
+        ),
+        "DOCKER_REGISTRY_SERVER_USERNAME": registry.name,
+        "DOCKER_REGISTRY_SERVER_PASSWORD": registry_credentials.passwords[0].value,
+        "WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
+        "DOCKER_ENABLE_CI": "true",
+        "WEBSITES_PORT": "8501",
+        "OPENAI_API_KEY": OPENAI_API_KEY,
+        "OPENAI_API_BASE": OPENAI_API_BASE,
+        "CLIENT_SECRET": application_password.value,
+    }
 )
+
+auth_settings = azure_native.web.WebAppAuthSettingsV2(
+    "streamlit-promptflow-demo-auth-settings",
+    name=webapp.name,
+    resource_group_name=resource_group.name,
+    identity_providers=azure_native.web.IdentityProvidersArgs(
+        azure_active_directory=azure_native.web.AzureActiveDirectoryArgs(
+            enabled=True,
+            registration=azure_native.web.AzureActiveDirectoryRegistrationArgs(
+                client_id=streamlit_promptflow_demo_aad_app.client_id,
+                client_secret_setting_name="CLIENT_SECRET",
+                open_id_issuer=f"https://sts.windows.net/{current.tenant_id}/v2.0"),
+            validation=azure_native.web.AzureActiveDirectoryValidationArgs(
+                allowed_audiences=[streamlit_promptflow_demo_aad_app.client_id]
+                )
+        )
+    ),
+    global_validation=azure_native.web.GlobalValidationArgs(
+        unauthenticated_client_action=azure_native.web.UnauthenticatedClientActionV2.REDIRECT_TO_LOGIN_PAGE,
+    )
+)
+
+pulumi.export("webapp_url", pulumi.Output.concat("https://", webapp.default_host_name))
