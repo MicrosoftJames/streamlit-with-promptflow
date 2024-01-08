@@ -1,0 +1,31 @@
+on:
+  workflow_dispatch:
+
+name: Deploy Pulumi Infrastructure
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Pulumi Destroy
+      uses: pulumi/actions@v5.0.0
+      with:
+        command: destroy
+        work-dir: infrastructure
+        stack-name: ${{ vars.PULUMI_ORG_NAME }}/streamlit-promptflow-demo/dev
+        upsert: true
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+        OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_LOCATION_NAME: ${{ secrets.ARM_LOCATION_NAME }}
