@@ -33,7 +33,7 @@ app_service_plan = azure_native.web.AppServicePlan(
     reserved=True,
     resource_group_name=resource_group.name,
     sku=azure_native.web.SkuDescriptionArgs(
-        name="B1", tier="Basic", size="B1", family="B", capacity=1
+        name="F1", tier="Free", size="F1", family="F", capacity=1
     ),
 )
 
@@ -93,7 +93,7 @@ webapp = azure_native.web.WebApp(
     reserved=True,
     server_farm_id=app_service_plan.id,
     site_config=azure_native.web.SiteConfigArgs(
-        always_on=True,
+        always_on=False,
         http20_enabled=False,
         linux_fx_version=image_name_with_repo.apply(lambda i: f"DOCKER|{i}"),
         number_of_workers=1,
