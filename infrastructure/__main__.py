@@ -106,7 +106,7 @@ current = azuread.get_client_config()
 streamlit_promptflow_demo_aad_app = azuread.Application(
     "streamlit-promptflow-demo-aad-app",
     display_name="streamlit-promptflow-demo",
-    sign_in_audience="AzureADMultipleOrgs",
+    sign_in_audience="AzureADMyOrg",
     owners=[current.object_id],
     web=azuread.ApplicationWebArgs(
         implicit_grant=azuread.ApplicationWebImplicitGrantArgs(
