@@ -33,7 +33,7 @@ app_service_plan = azure_native.web.AppServicePlan(
     reserved=True,
     resource_group_name=resource_group.name,
     sku=azure_native.web.SkuDescriptionArgs(
-        name="P0v3", tier="Premium0V3", size="P0v3", family="Pv3", capacity=1
+        name="B1", tier="Basic", size="B1", family="B", capacity=1
     ),
 )
 
