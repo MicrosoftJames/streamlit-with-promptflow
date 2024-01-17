@@ -24,8 +24,21 @@ You must set the following environment variables:
 - `OPENAI_API_KEY` - The API key for your Azure OpenAI Service resource
 - `OPENAI_API_BASE` - The base URL for your Azure OpenAI Service resource in the form `https://<resource-name>.openai.azure.com`
 
-# Run the app
+# Run the app locally
 You can run the app using the following command:
 ```bash
 streamlit run app.py
 ```
+
+# Deploy the app
+The repository uses Pulumi and GitHub actions to deploy the app to Azure App Service. To run the GitHub actions workflow, you must set the following secrets:
+- `ARM_CLIENT_ID` - The client ID of the service principal used to deploy the app
+- `ARM_CLIENT_SECRET` - The client secret of the service principal used to deploy the app
+- `ARM_LOCATION_NAME` - The Azure region to deploy the app to
+- `ARM_SUBSCRIPTION_ID` - The Azure subscription ID to deploy the app to
+- `ARM_TENANT_ID` - The Azure tenant ID to deploy the app to
+- `OPENAI_API_BASE` - The base URL for your Azure OpenAI Service resource in the form `https://<resource-name>.openai.azure.com`
+- `OPENAI_API_KEY` - The API key for your Azure OpenAI Service resource
+- `PULUMI_ACCESS_TOKEN` - The Pulumi access token to use for deployment
+
+Your service principal must have the ability to create to app registrations and managed identities.
