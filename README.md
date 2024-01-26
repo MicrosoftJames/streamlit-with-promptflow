@@ -19,6 +19,13 @@ You can install the dependencies using pip:
 pip install -r requirements.txt
 ```
 
+# Azure OpenAI Service
+The requires access to an existing Azure OpenAI Service deployment with API access.
+
+By default, the app expects a deployment with name `gpt-4-turbo`.
+
+You can change this in [flows/chat/flow.dag.yaml](flows/chat/flow.dag.yaml) and [flows/make_title/flow.dag.yaml](flows/make_title/flow.dag.yaml) by setting the `deployment_name`.
+
 # Environment variables
 You must set the following environment variables:
 - `OPENAI_API_KEY` - The API key for your Azure OpenAI Service resource
