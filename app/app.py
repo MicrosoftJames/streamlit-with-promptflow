@@ -1,4 +1,3 @@
-from dataclasses import field
 import json
 import os
 from typing import List
@@ -11,7 +10,7 @@ from promptflow.entities import AzureOpenAIConnection
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_API_BASE = os.getenv("OPENAI_API_BASE")
-PAGE_TITLE = "Prompt flow + Streamlit"
+PAGE_TITLE = "Promptflow + Streamlit"
 
 CHAT_FLOW_PATH = "flows/chat"
 TITLE_FLOW_PATH = "flows/make_title"
@@ -73,8 +72,6 @@ if "chat_history" not in st.session_state and \
         os.path.exists("chat_history.jsonl"):
     restore_chat_history()
 
-st.title(PAGE_TITLE)
-
 # Initialize chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history: List[ChatThreadHistory] = [
@@ -99,6 +96,8 @@ with st.sidebar:
         save_chat_history(st.session_state.chat_history)
 
     st.button("Delete chat", on_click=lambda: delete_chat())
+
+st.title(st.session_state.chat_history[st.session_state.chat_i].title)
 
 chat = st.empty()
 
